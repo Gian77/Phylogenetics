@@ -1,0 +1,48 @@
+#!/bin/bash --login
+#SBATCH --time=06:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=256G
+#SBATCH --job-name=muscle
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: muscle.sb\n"
+
+# Load modules
+module purge
+module load Miniforge3
+conda activate raxmlNG
+
+# Define paths
+INPUT_DIR="sequence_data"
+OUTPUT_DIR="results"
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Run MUSCLE alignment
+# NOTE! This take a long time with  > 500 seqeunces
+#muscle \
+#    -align "${INPUT_DIR}/otus_99.fasta" \
+#    -output "${OUTPUT_DIR}/otus99_aln_muscle.fasta" \
+#    -threads "$cores"
+
+# Run MUSCLE5 super5 algorithm 
+# This is much better for large datasets
+muscle \
+    -super5 "${INPUT_DIR}/otus_99_filtered.fasta" \
+    -output "${OUTPUT_DIR}/otus99_aln_muscle.fasta" \
+    -threads "$cores"
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"

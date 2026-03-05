@@ -1,0 +1,54 @@
+#!/bin/bash --login
+#SBATCH --time=03:59:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=64G
+#SBATCH --job-name=modeltest
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: modelTestNG.sb\n"
+
+# Load modules
+module purge
+module load Miniforge3
+conda activate raxmlNG
+
+# Define paths
+INPUT_DIR="results"
+OUTPUT_DIR="results"
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Run ModelTETS-ng
+
+modeltest-ng \
+	-i "${INPUT_DIR}/otus99_mafft_trim.fasta" \
+	-d nt \
+	-p $cores \
+	-t fixed-ml-gtr \
+	-o "${OUTPUT_DIR}/otus99_mafft_trim_mt"
+
+# --topology fixed is strongly recommended for large trees.
+# It estimates likelihoods on a fixed starting tree (NJ), which
+#  is sufficient for model choice and avoids insane runtimes.
+
+echo
+echo "Best model lines:"
+grep -i "best model" "${OUTPUT_DIR}/otus99_mafft_trim_mt.out" || true
+
+MODEL=$(grep -i "best model" "${OUTPUT_DIR}/otus99_mafft_trim_mt.out" | sed 's/.*: //')
+echo "Best model: $MODEL"
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"

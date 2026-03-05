@@ -1,0 +1,24 @@
+#!/bin/bash --login
+
+#SBATCH --time=12:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=256G
+#SBATCH --job-name=muscle
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+RAM_CPU="$SLURM_MEM_PER_CPU"
+
+module purge
+module load Miniforge3
+conda activate R_phylo
+
+Rscript alignment_parallel.R
+
+echo -e "\n========== Sbatch log ==========\n"
+echo -e "Current directory: $(pwd)\n"
+echo -e "$(sacct -u benucci -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS)\n"
+scontrol show job "$SLURM_JOB_ID"

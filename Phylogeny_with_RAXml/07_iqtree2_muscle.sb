@@ -1,0 +1,45 @@
+#!/bin/bash --login
+#SBATCH --time=12:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=128G
+#SBATCH --job-name=iqtree2
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: iqtree2.sb\n"
+
+# Load modules
+module purge
+module load Miniforge3
+conda activate iqtree2
+
+# Define paths
+INPUT_DIR="results"
+OUTPUT_DIR="results"
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Run iqtree2
+iqtree2 \
+	-s "${INPUT_DIR}/otus99_muscle_trim.fasta" \
+	-m MFP \
+	-B 2000 \
+	--bnni \
+	-alrt 1000 \
+	-T AUTO \
+	--seed 2602 \
+	--prefix "${OUTPUT_DIR}/otus99_muscle_trim_iq2"
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"

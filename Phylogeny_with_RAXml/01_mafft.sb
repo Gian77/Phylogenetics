@@ -1,0 +1,40 @@
+#!/bin/bash --login
+#SBATCH --time=03:59:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=256G
+#SBATCH --job-name=muscle
+#SBATCH -A shade-cole-bonito
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: mafft.sb\n"
+
+# Load modules
+module purge
+module load Miniforge3
+conda activate raxmlNG
+
+# Define paths
+INPUT_DIR="sequence_data"
+OUTPUT_DIR="results"
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Run MAFFT alignment - auto selects best algorithm
+mafft \
+	--thread "$cores" \
+	--auto "${INPUT_DIR}/otus_99_filtered.fasta" > "${OUTPUT_DIR}/otus99_aln_mafft.fasta"
+
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"

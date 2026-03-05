@@ -1,0 +1,44 @@
+#!/bin/bash --login
+#SBATCH --time=03:59:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=128G
+#SBATCH --job-name=raxml
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: raxmlNG.sb\n"
+
+# Load modules
+module purge
+module load Miniforge3
+conda activate raxmlNG
+
+# Define paths
+INPUT_DIR="results"
+OUTPUT_DIR="results"
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Run ModelTETS-ng
+raxml-ng \
+	--search \
+	--msa "${INPUT_DIR}/otus99_muscle_trim.fasta" \
+	--model GTR+G4 \
+	--tree rand{10},pars{10} \
+	--threads $cores \
+	--seed 2602 \
+	--prefix "${OUTPUT_DIR}/otus99_muscle_trim"
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"

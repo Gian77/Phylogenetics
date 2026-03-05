@@ -1,0 +1,16 @@
+# RAXml
+Phylogeny_with_RAXml/slurm*
+Phylogeny_with_RAXml/results/*
+Phylogeny_with_RAXml/results/
+Phylogeny_with_RAXml/sequence_data/
+Phylogeny_with_RAXml/sequence_data/*
+
+# R
+Phylogeny_with_R/slurm*
+Phylogeny_with_R/results/*
+Phylogeny_with_R/results/
+Phylogeny_with_R/results/sequence_data/
+Phylogeny_with_R/results/sequence_data/*
+
+
+
