@@ -37,13 +37,6 @@ modeltest-ng \
 # It estimates likelihoods on a fixed starting tree (NJ), which
 #  is sufficient for model choice and avoids insane runtimes.
 
-echo
-echo "Best model lines:"
-grep -i "best model" "${OUTPUT_DIR}/otus99_mafft_trim_mt.out" || true
-
-MODEL=$(grep -i "best model" "${OUTPUT_DIR}/otus99_mafft_trim_mt.out" | sed 's/.*: //')
-echo "Best model: $MODEL"
-
 echo -e "\n========== Job Summary ==========\n"
 echo -e "Working directory: $(pwd)"
 echo -e "Threads used: $cores\n"
