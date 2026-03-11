@@ -18,8 +18,8 @@ module load Miniforge3
 conda activate raxmlNG
 
 # Define paths
-INPUT_DIR="sequence_data"
-OUTPUT_DIR="results"
+INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/sequence_data"
+OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
 
 # Create output directory if it doesn't exist
 mkdir -p "$OUTPUT_DIR"

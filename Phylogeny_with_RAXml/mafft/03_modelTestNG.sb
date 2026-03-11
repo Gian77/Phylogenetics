@@ -10,7 +10,7 @@
 cd "$SLURM_SUBMIT_DIR"
 cores="$SLURM_CPUS_PER_TASK"
 
-echo -e "Running: modelTestNG.sb\n"
+echo -e "Running: modelTestNG.sb\n from MAFFT alignment"
 
 # Load modules
 module purge
@@ -18,8 +18,8 @@ module load Miniforge3
 conda activate raxmlNG
 
 # Define paths
-INPUT_DIR="results"
-OUTPUT_DIR="results"
+INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
+OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
 
 # Create output directory if it doesn't exist
 mkdir -p "$OUTPUT_DIR"

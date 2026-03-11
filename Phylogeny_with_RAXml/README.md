@@ -1,6 +1,6 @@
 # Phylogeny with RAXml
 
-# Load conda envs in the HPCC at Michigan State
+## Load conda envs in the HPCC
 
 ```
 module purge
@@ -8,7 +8,7 @@ module load Miniforge3
 conda activate raxmlNG
 ```
 
-# Check tool versions
+## Check tool versions
 
 ```
 muscle -version
@@ -17,7 +17,7 @@ modeltest-ng --version
 raxml-ng --version
 ```
 
-# I considered two alignment options for large trees: mafft and muscle
+## I considered two alignment options for large trees: mafft and muscle
 
 ## 📂 Repository Structure
 
@@ -112,9 +112,9 @@ raxml-ng --version
 ```
 
 ⚠️  [WARNINGS]
-Use mafft for faster alignments
-Use MUSCLE5 super5 algorithm for large datasets
-Use automatic trimming (recommended): ff this is ITS and you expect messy regions, consider also trying a stricter trim and comparing restuls
+* Use mafft for faster alignments. <br>
+* Use MUSCLE5 super5 algorithm for large datasets. <br>
+* Use automatic trimming (recommended): ff this is ITS and you expect messy regions, consider also trying a stricter trim and comparing restuls.<br>
 
 ## 🚀 Clone and Use
 

@@ -1,8 +1,10 @@
 echo -e "1) Basic sanity metrics (length, % gaps, #informative sites)"
 echo -e "A) Alignment length and gap fraction:\n"
-echo -e "First prints number of sequences and alignment length (rough)."
+echo -e "First prints number of sequences and alignment length (rough).\n"
 
-for f in results/otus99_aln_mafft.fasta results/otus99_mafft_trim.fasta results/otus99_mafft_trim_gappy.fasta; do
+DIR_PATH="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft"
+
+for f in "$DIR_PATH"/results/otus99_aln_mafft.fasta results/otus99_mafft_trim.fasta "$DIR_PATH"/results/otus99_mafft_trim_gappy.fasta; do
   echo "== $f =="
   awk '
     BEGIN{seq=""; n=0; gaps=0; len=0}
@@ -27,8 +29,9 @@ for f in results/otus99_aln_mafft.fasta results/otus99_mafft_trim.fasta results/
   ' "$f"
 done
 
+echo -e "\n"
 echo -e "B) Compute overall gap proportion (more useful):"
-for f in results/otus99_aln_mafft.fasta results/otus99_mafft_trim.fasta results/otus99_mafft_trim_gappy.fasta; do
+for f in "$DIR_PATH"/results/otus99_aln_mafft.fasta results/otus99_mafft_trim.fasta "$DIR_PATH"/results/otus99_mafft_trim_gappy.fasta; do
   echo "== $f =="
   awk '
     /^>/ {next}
