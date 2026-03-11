@@ -21,6 +21,7 @@ raxml-ng --version
 
 ## 📂 Repository Structure
 
+```
 ├── mafft
 │   ├── 01_mafft.sb
 │   ├── 02_trimal.sb
@@ -108,7 +109,7 @@ raxml-ng --version
 │   └── otus_99_filtered.fasta
 ├── slurm-3001478.out
 └── slurm-3001487.out
-
+```
 
 ⚠️  [WARNINGS]
 Use mafft for faster alignments
