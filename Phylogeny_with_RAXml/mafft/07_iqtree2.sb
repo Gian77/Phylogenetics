@@ -10,7 +10,7 @@
 cd "$SLURM_SUBMIT_DIR"
 cores="$SLURM_CPUS_PER_TASK"
 
-echo -e "Running: iqtree2.sb\n from MAFFT alignment"
+echo -e "Running: iqtree2.sb from MAFFT alignment\n"
 
 # Load modules
 module purge
@@ -32,7 +32,8 @@ iqtree2 \
 	--bnni \
 	-alrt 1000 \
 	-T AUTO \
-	--seed 2602 \
+	--seed 2326 \
+	--redo \
 	--prefix "${OUTPUT_DIR}/otus99_mafft_trim_iq2"
 
 echo -e "\n========== Job Summary ==========\n"

@@ -2,7 +2,7 @@
 #SBATCH --time=03:59:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
 #SBATCH --job-name=raxml
 #SBATCH -A glbrc
@@ -31,8 +31,8 @@ raxml-ng \
 	--model GTR+G4 \
 	--tree rand{10},pars{10} \
 	--threads $cores \
-	--seed 2602 \
-	--prefix "${OUTPUT_DIR}/otus99_mafft_trim"
+	--seed 2630 \
+	--prefix "${OUTPUT_DIR}/otus99_mafft_trim_ml"
 
 echo -e "\n========== Job Summary ==========\n"
 echo -e "Working directory: $(pwd)"

@@ -10,7 +10,7 @@
 cd "$SLURM_SUBMIT_DIR"
 cores="$SLURM_CPUS_PER_TASK"
 
-echo -e "Running: support.sb\n from MAFFT alignment"
+echo -e "Running: support.sb from MAFFT alignment\n"
 
 # Load modules
 module purge
@@ -30,6 +30,7 @@ raxml-ng \
 	--tree "${INPUT_DIR}/otus99_mafft_trim_ml.raxml.bestTree" \
 	--bs-trees "${INPUT_DIR}/otus99_mafft_trim_bs.raxml.bootstraps" \
 	--threads $cores \
+	--redo \
 	--prefix "${OUTPUT_DIR}/otus99_mafft_trim_spprt"
 
 echo -e "\n========== Job Summary ==========\n"
