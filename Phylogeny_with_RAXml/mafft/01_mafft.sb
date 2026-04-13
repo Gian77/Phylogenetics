@@ -17,18 +17,20 @@ module purge
 module load Miniforge3
 conda activate raxmlNG
 
-# Define paths
-INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/sequence_data"
-OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
+# Source config.yml file
+source config.yml
 
-# Create output directory if it doesn't exist
+# Create outputs
 mkdir -p "$OUTPUT_DIR"
+BASE=$(basename "${INPUT_FILE%.*}")
+OUTPUT_FILE="${OUTPUT_DIR}/${BASE}_aln_mafft.fasta"
 
 # Run MAFFT alignment - auto selects best algorithm
 mafft \
-	--thread "$cores" \
-	--auto "${INPUT_DIR}/otus_99_filtered.fasta" > "${OUTPUT_DIR}/otus99_aln_mafft.fasta"
+    --thread "$cores" \
+    --auto "$INPUT_FILE" > "$OUTPUT_FILE"
 
+echo -e "\nAlignment complete. Output saved to: $OUTPUT_FILE \n"
 
 echo -e "\n========== Job Summary ==========\n"
 echo -e "Working directory: $(pwd)"

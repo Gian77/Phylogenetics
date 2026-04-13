@@ -1,0 +1,5 @@
+# Config file - Define paths
+
+INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/sequence_data"
+OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results_97"
+INPUT_FILE="${INPUT_DIR}/otus_97_filtered.fasta"

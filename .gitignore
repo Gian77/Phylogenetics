@@ -3,8 +3,10 @@
 Phylogeny_with_RAXml/mafft/slurm*
 Phylogeny_with_RAXml/mafft/results/*
 Phylogeny_with_RAXml/mafft/results/
+Phylogeny_with_RAXml/mafft/results*
 Phylogeny_with_RAXml/sequence_data/
 Phylogeny_with_RAXml/sequence_data/*
+
 
 Phylogeny_with_RAXml/muscle/slurm*
 Phylogeny_with_RAXml/muscle/results/*
