@@ -17,25 +17,26 @@ module purge
 module load Miniforge3
 conda activate raxmlNG
 
-# Define paths
-INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
-OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
+# Source config.yml file
+source config.yml
 
-# Create output directory if it doesn't exist
-mkdir -p "$OUTPUT_DIR"
+# Create outputs
+ALIGNMENT_TRIM=$(find "$OUTPUT_DIR" -type f -name "*_mafft_trim.fasta")
+BASE=$(basename "${ALIGNMENT_TRIM%.*}")
 
 # Run ModelTETS-ng
-
 modeltest-ng \
-	-i "${INPUT_DIR}/otus99_mafft_trim.fasta" \
-	-d nt \
-	-p $cores \
-	-t fixed-ml-gtr \
-	-o "${OUTPUT_DIR}/otus99_mafft_trim_mt"
+    -i "${ALIGNMENT_TRIM}" \
+    -d nt \
+    -p "$cores" \
+    -t fixed-ml-gtr \
+    -o "${OUTPUT_DIR}/${BASE}_mt"
+
+echo -e "\nModelTest complete. Output saved to: ${OUTPUT_DIR} \n"
 
 # --topology fixed is strongly recommended for large trees.
 # It estimates likelihoods on a fixed starting tree (NJ), which
-#  is sufficient for model choice and avoids insane runtimes.
+# is sufficient for model choice and avoids insane runtimes.
 
 echo -e "\n========== Job Summary ==========\n"
 echo -e "Working directory: $(pwd)"

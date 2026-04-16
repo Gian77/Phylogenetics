@@ -17,32 +17,34 @@ module purge
 module load Miniforge3
 conda activate raxmlNG
 
-# Define paths
-INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
-OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
+# Source config.yml file
+source config.yml
 
-# Create output directory if it doesn't exist
-mkdir -p "$OUTPUT_DIR"
+# Create outputs
+ALIGNMENT=$(find "$OUTPUT_DIR" -type f -name "*aln_mafft.fasta")
+BASE=$(basename "${ALIGNMENT%_aln_mafft.fasta}")
+OUTPUT_FILE="${OUTPUT_DIR}/${BASE}_mafft_trim.fasta"
+OUTPUT_FILE_GAPPY="${OUTPUT_DIR}/${BASE}_mafft_trim_gappy.fasta"
 
 # Run trimal automatically
-
 trimal \
-	-in "${INPUT_DIR}/otus99_aln_mafft.fasta" \
-	-out "${OUTPUT_DIR}/otus99_mafft_trim.fasta" \
+	-in "${ALIGNMENT}" \
+	-out "${OUTPUT_FILE}" \
 	-automated1
 
 # Stricket trim and compare
 trimal \
-	-in "${INPUT_DIR}/otus99_aln_mafft.fasta" \
-	-out "${OUTPUT_DIR}/otus99_mafft_trim_gappy.fasta" \
+	-in "${ALIGNMENT}" \
+	-out "${OUTPUT_FILE_GAPPY}" \
 	-gappyout
 
+echo -e "\nTrimming complete. Output saved to: $OUTPUT_FILE \n $OUTPUT_FILE_GAPPY \n"
+
 echo -e "\n========== Job Summary ==========\n"
-echo -e "Working directory: $(pwd)"
-echo -e "Threads used: $cores\n"
+echo -e "Working directory: `$(pwd)`"
+echo -e "Threads used: `$cores`\n"
 
 echo -e "\n========== Sbatch log ==========\n"
 sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
 echo -e "\n"
 scontrol show job "$SLURM_JOB_ID"
-

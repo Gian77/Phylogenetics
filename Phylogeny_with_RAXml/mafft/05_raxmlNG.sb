@@ -1,38 +1,40 @@
 #!/bin/bash --login
-#SBATCH --time=24:00:00
+#SBATCH --time=03:59:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
-#SBATCH --job-name=bootstrap
+#SBATCH --job-name=raxml
 #SBATCH -A glbrc
 
 cd "$SLURM_SUBMIT_DIR"
 cores="$SLURM_CPUS_PER_TASK"
 
-echo -e "Running: bootstrap.sb\n from MAFFT alignment"
+echo -e "Running: raxmlNG.sb\n from MAFFT alighment"
 
 # Load modules
 module purge
 module load Miniforge3
 conda activate raxmlNG
 
-# Define paths
-INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
-OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
+# Source config.yml file
+source config.yml
 
-# Create output directory if it doesn't exist
-mkdir -p "$OUTPUT_DIR"
+# Create outputs
+ALIGNMENT_TRIM=$(find "$OUTPUT_DIR" -type f -name "*_mafft_trim.fasta")
+BASE=$(basename "${ALIGNMENT_TRIM%.*}")
 
 # Run ModelTETS-ng
 raxml-ng \
-	--bootstrap \
-        --msa "${INPUT_DIR}/otus99_mafft_trim.fasta" \
+	--search \
+	--msa "${ALIGNMENT_TRIM}" \
 	--model GTR+G4 \
-	--bs-trees 500 \
+	--tree rand{10},pars{10} \
 	--threads $cores \
-	--seed 2602 \
-       --prefix "${OUTPUT_DIR}/otus99_mafft_trim_bs"
+	--seed 2630 \
+	--prefix "${OUTPUT_DIR}/${BASE}_ml"
+
+echo -e "\nRAXML-ng complete. Output saved to: ${OUTPUT_DIR} \n"
 
 echo -e "\n========== Job Summary ==========\n"
 echo -e "Working directory: $(pwd)"

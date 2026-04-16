@@ -1,0 +1,46 @@
+#!/bin/bash --login
+#SBATCH --time=05:59:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=128G
+#SBATCH --job-name=support
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: support.sb from MAFFT alignment\n"
+
+# Load modules
+module purge
+module load Miniforge3
+conda activate raxmlNG
+
+# Source config.yml file
+source config.yml
+
+# Create outputs
+BEST_TREE=$(find "$OUTPUT_DIR" -type f -name "*_trim_ml.raxml.bestTree")
+BASE=$(basename "${BEST_TREE%_ml.raxml.bestTree}")
+BS_TREES=$(find "$OUTPUT_DIR" -type f -name "*_trim_bs.raxml.bootstraps")
+
+# Run ModelTETS-ng
+raxml-ng \
+	--support \
+	--tree "${BEST_TREE}" \
+	--bs-trees "${BS_TREES}" \
+	--threads "$cores" \
+	--redo \
+	--prefix "${OUTPUT_DIR}/${BASE}_spprt"
+
+echo -e "\nSupport addition complete. Output saved to: ${OUTPUT_DIR} \n"
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"

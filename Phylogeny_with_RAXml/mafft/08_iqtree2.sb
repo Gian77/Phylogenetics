@@ -17,16 +17,16 @@ module purge
 module load Miniforge3
 conda activate iqtree2
 
-# Define paths
-INPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
-OUTPUT_DIR="/mnt/home/benucci/Phylogenetics/Phylogeny_with_RAXml/mafft/results"
+# Source config.yml file
+source config.yml
 
-# Create output directory if it doesn't exist
-mkdir -p "$OUTPUT_DIR"
+# Create outputs
+ALIGNMENT_TRIM=$(find "$OUTPUT_DIR" -type f -name "*_mafft_trim.fasta")
+BASE=$(basename "${ALIGNMENT_TRIM%.*}")
 
 # Run iqtree2
 iqtree2 \
-	-s "${INPUT_DIR}/otus99_mafft_trim.fasta" \
+	-s "${ALIGNMENT_TRIM}" \
 	-m MFP \
 	-B 2000 \
 	--bnni \
@@ -34,7 +34,9 @@ iqtree2 \
 	-T AUTO \
 	--seed 2326 \
 	--redo \
-	--prefix "${OUTPUT_DIR}/otus99_mafft_trim_iq2"
+	--prefix "${OUTPUT_DIR}/${BASE}_iq2"
+
+echo -e "\niqtree complete. Output saved to: ${OUTPUT_DIR} \n"
 
 echo -e "\n========== Job Summary ==========\n"
 echo -e "Working directory: $(pwd)"

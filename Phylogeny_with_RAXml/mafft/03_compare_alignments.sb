@@ -1,0 +1,84 @@
+#!/bin/bash --login
+#SBATCH --time=00:59:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=32G
+#SBATCH --job-name=trimal
+#SBATCH -A glbrc
+
+cd "$SLURM_SUBMIT_DIR"
+cores="$SLURM_CPUS_PER_TASK"
+
+echo -e "Running: 03_compare_alignments.sb\n"
+
+# Source config.yml file
+source config.yml
+
+# retrive files
+ALIGNMENT=$(find "$OUTPUT_DIR" -type f -name "*aln_mafft.fasta")
+ALIGNMENT_TRIM=$(find "$OUTPUT_DIR" -type f -name "*_mafft_trim.fasta")
+ALIGNMENT_TRIM_GAPPY=$(find "$OUTPUT_DIR" -type f -name "*_mafft_trim_gappy.fasta")
+
+# Compare allignemnts
+echo -e "COMPARE ALIGNMENTS TRIM FILES\n"
+
+echo -e "Basic sanity metrics (length, % gaps, #informative sites)\n"
+echo -e "A) Alignment length and gap fraction:\n"
+echo -e "First prints number of sequences and alignment length (rough).\n"
+
+for f in "$ALIGNMENT" "$ALIGNMENT_TRIM" "$ALIGNMENT_TRIM"; do
+  echo "== $f =="
+  awk '
+    BEGIN{seq=""; n=0; gaps=0; len=0}
+    /^>/{
+      if(n>0){
+        if(len==0) len=length(seq)
+        # assume equal length alignment
+      }
+      seq=""
+      n++
+      next
+    }
+    {
+      gsub(/[ \t\r\n]/,"")
+      seq=seq $0
+    }
+    END{
+      # cannot compute gaps without reading all seqs; do second pass
+      print "seqs:", n
+      print "aln_len(first seq):", length(seq)
+    }
+  ' "$f"
+done
+
+echo -e "\n"
+echo -e "B) Compute overall gap proportion (more useful):"
+for f in "$ALIGNMENT" "$ALIGNMENT_TRIM" "$ALIGNMENT_TRIM"; do
+  echo "== $f =="
+  awk '
+    /^>/ {next}
+    {
+      gsub(/[ \t\r\n]/,"")
+      total += length($0)
+      gaps  += gsub(/-/, "-", $0)
+    }
+    END{
+      printf("total_chars=%d gaps=%d gap_frac=%.4f\n", total, gaps, gaps/total)
+    }
+  ' "$f"
+done
+
+echo -e "\nPick the alignment that:" 
+echo -e "* keeps a reasonable length (not ridiculously short)."
+echo -e "* has meaningfully reduced gap fraction vs raw."
+echo -e "* doesn’t look like it nuked everything into a tiny core.\n"
+
+echo -e "\n========== Job Summary ==========\n"
+echo -e "Working directory: $(pwd)"
+echo -e "Threads used: $cores\n"
+
+echo -e "\n========== Sbatch log ==========\n"
+sacct -u "$USER" -j "$SLURM_JOB_ID" --format=JobID,JobName,Start,End,Elapsed,NCPUS
+echo -e "\n"
+scontrol show job "$SLURM_JOB_ID"
